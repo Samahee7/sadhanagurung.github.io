@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sadhana Gurung — UI/UX Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FFFFFF; --blush: #F4F4F5; --blush-2: #EAEAEC;
+    --rose: #D6336C; --rose-light: #F06595;
+    --ink: #111111; --muted: #6B6B72; --line: #E6E6E9;
+    --dark: #1E1E20;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--ink); background: #ECECEE;
+    background-image: radial-gradient(ellipse at 20% 0%, #FFFFFF 0%, transparent 55%), radial-gradient(ellipse at 90% 40%, #DADADF 0%, transparent 60%);
+    background-attachment: fixed;
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased; line-height: 1.55; overflow-x: hidden;
+  }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  img { max-width: 100%; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .reveal { opacity: 1; transform: none; transition: none; } }
+
+  /* Pills & buttons */
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 16px; font-size: .88rem; font-weight: 600; text-decoration: none;
+    box-shadow: 0 6px 18px -10px rgba(0,0,0,.25); transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .pill:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -12px rgba(0,0,0,.35); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #22C55E; box-shadow: 0 0 0 4px rgba(34,197,94,.18); }
+  .btn-dark {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #141414; color: #fff; border-radius: 999px; padding: 13px 24px;
+    font-size: .92rem; font-weight: 600; text-decoration: none; border: 0; cursor: pointer;
+    box-shadow: 0 10px 24px -10px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.12);
+    transition: transform .15s ease;
+  }
+  .btn-dark:hover { transform: translateY(-2px); }
+  .btn-dark .arr, .pill .arr { display: inline-block; transition: transform .2s ease; }
+  .btn-dark:hover .arr { transform: translate(2px, -2px); }
+
+  /* Nav */
+  nav.topnav { position: sticky; top: 0; z-index: 50; padding: 14px 0; }
+  .topnav-inner { max-width: 1120px; margin: 0 auto; padding: 0 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .topnav .links { display: flex; gap: 40px; font-size: .95rem; font-weight: 500; }
+  .topnav .links a { text-decoration: none; }
+  .topnav .links a sup { font-size: .68rem; color: var(--muted); margin-left: 4px; }
+  .topnav .links a:hover { opacity: .6; }
+
+  /* Hero */
+  header.hero { position: relative; padding: 90px 0 70px; }
+  .hero-name {
+    font-weight: 800; letter-spacing: .02em; line-height: .95; margin: 0;
+    font-size: clamp(2.6rem, 11.5vw, 8.6rem); text-transform: uppercase; text-align: center;
+    display: flex; justify-content: center; gap: .22em; flex-wrap: wrap;
+  }
+  .hero-name .outline { color: transparent; -webkit-text-stroke: 2px var(--ink); }
+  .hero-foot { margin-top: 56px; display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; }
+  .hero-role { font-size: 1.5rem; font-weight: 700; margin: 0 0 8px; }
+  .hero-sub { color: var(--muted); max-width: 40ch; margin: 0 0 22px; font-size: .98rem; }
+  .hero-socials { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+
+  /* Section headings */
+  .sec-title { font-weight: 800; font-size: clamp(1.8rem, 5vw, 3rem); letter-spacing: -.01em; margin: 0; text-transform: uppercase; }
+  .sec-title::before { content: "/"; }
+  .section { padding: 80px 0; }
+
+  /* Work */
+  .work-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin: 28px 0 34px; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-tab {
+    font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer;
+    background: transparent; border: 1px solid transparent; border-radius: 999px; padding: 8px 16px; color: var(--muted);
+    transition: all .15s ease;
+  }
+  .filter-tab:hover { color: var(--ink); }
+  .filter-tab.active { background: #fff; border-color: var(--line); color: var(--ink); box-shadow: 0 6px 16px -10px rgba(0,0,0,.3); }
+  .work-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  .work-card { display: block; text-decoration: none; background: #fff; border-radius: 24px; padding: 14px 14px 22px; box-shadow: 0 24px 50px -30px rgba(0,0,0,.35); border: 1px solid rgba(0,0,0,.04); transition: transform .25s ease, box-shadow .25s ease; position: relative; }
+  .work-card:hover { transform: translateY(-6px); box-shadow: 0 34px 60px -30px rgba(0,0,0,.45); }
+  .work-card.hide { display: none; }
+  .card-thumb { aspect-ratio: 16/10; border-radius: 16px; overflow: hidden; background: var(--blush); position: relative; }
+  .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s ease; }
+  .work-card:hover .card-thumb img { transform: scale(1.04); }
+  .card-thumb.img-fallback { display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; }
+  .card-thumb.img-fallback .fallback-label { color: var(--muted); font-size: .85rem; font-weight: 600; }
+  .badge { position: absolute; top: 12px; left: 12px; z-index: 2; background: #fff; border-radius: 999px; padding: 4px 11px; font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 6px 14px -8px rgba(0,0,0,.4); }
+  .go { position: absolute; right: 14px; bottom: 14px; z-index: 2; width: 42px; height: 42px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: 0 8px 18px -8px rgba(0,0,0,.5); opacity: 0; transform: scale(.8); transition: all .25s ease; }
+  .work-card:hover .go { opacity: 1; transform: scale(1); }
+  .card-body { padding: 18px 8px 0; }
+  .card-body h3 { margin: 0 0 12px; font-size: 1.2rem; font-weight: 600; line-height: 1.3; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: .78rem; font-weight: 600; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; }
+
+  /* BizzFlow custom thumbnail */
+  .bizz-thumb { background: linear-gradient(135deg, #D6336C 0%, #F06595 55%, #FBE0EA 130%); display: flex; align-items: center; justify-content: center; }
+  .bz-window { display: flex; width: 74%; height: 68%; background: rgba(255,255,255,.96); border-radius: 12px; overflow: hidden; box-shadow: 0 24px 40px -18px rgba(36,18,32,.55); transition: transform .4s ease; }
+  .work-card:hover .bz-window { transform: translateY(-4px) scale(1.03); }
+  .bz-side { width: 20%; background: #241220; padding: 10px 8px; display: flex; flex-direction: column; gap: 8px; }
+  .bz-side b { height: 6px; border-radius: 3px; background: rgba(255,255,255,.35); }
+  .bz-side b:first-child { background: #F06595; }
+  .bz-main { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .bz-stats { display: flex; gap: 8px; }
+  .bz-stats i { flex: 1; height: 26px; border-radius: 6px; background: #FDEEF3; border: 1px solid #F3D9E4; }
+  .bz-stats i:first-child { background: #D6336C; border-color: #D6336C; }
+  .bz-chart { flex: 1; display: flex; align-items: flex-end; gap: 7px; }
+  .bz-chart u { flex: 1; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, #F06595, #FBE0EA); }
+  .bz-chip { position: absolute; left: 14px; bottom: 14px; background: rgba(20,20,20,.8); color: #fff; font-size: .72rem; font-weight: 600; padding: 5px 12px; border-radius: 20px; }
+
+  /* Tags used inside case-study modals */
+  .card-tag { display: inline-block; font-size: .75rem; font-weight: 600; padding: 3px 10px; border-radius: 12px; margin-bottom: 10px; }
+  .tag-client { background: #FDEEF3; color: var(--rose); }
+  .tag-challenge { background: #FFF3CD; color: #B8860B; }
+  .tag-personal { background: #E7F5EC; color: #2F9E5B; }
+
+  /* Experience (dark panel) */
+  .exp-panel { background: var(--dark); color: #fff; border-radius: 28px; padding: 56px 48px; position: relative; overflow: hidden; box-shadow: 0 40px 80px -40px rgba(0,0,0,.6); }
+  .exp-panel::before { content: "EXPERIENCE"; position: absolute; top: 4px; left: 40px; font-weight: 800; font-size: clamp(3rem, 14vw, 9rem); color: rgba(255,255,255,.04); letter-spacing: .04em; pointer-events: none; }
+  .exp-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 12px; position: relative; margin-bottom: 30px; }
+  .exp-head .sec-title { color: #fff; }
+  .exp-head span { color: rgba(255,255,255,.75); font-weight: 500; }
+  .exp-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 24px 0; border-top: 1px solid rgba(255,255,255,.12); position: relative; transition: padding .2s ease; }
+  .exp-row:hover { padding-left: 10px; }
+  .exp-row h4 { margin: 0 0 4px; font-size: 1.05rem; font-weight: 600; }
+  .exp-row p { margin: 0; color: rgba(255,255,255,.55); font-size: .95rem; }
+  .exp-row .when { color: rgba(255,255,255,.65); font-size: .95rem; text-align: right; }
+
+  /* Contact */
+  .contact { text-align: center; padding: 90px 0 70px; }
+  .contact h2 { font-weight: 800; font-size: clamp(2rem, 7vw, 4rem); margin: 22px 0 14px; text-transform: uppercase; letter-spacing: -.01em; }
+  .contact p { color: var(--muted); max-width: 52ch; margin: 0 auto 28px; }
+  .contact-pills { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 56px; }
+  .pill.me { background: #141414; color: #fff; border-color: #141414; }
+  .avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #F06595, #D6336C); color: #fff; font-size: .62rem; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+  .fine-print { text-align: center; font-size: .82rem; color: var(--muted); padding: 0 0 40px; margin: 0; }
+
+  /* Responsive */
+  @media (max-width: 900px) { .work-grid { gap: 20px; } .exp-panel { padding: 44px 32px; } }
+  @media (max-width: 760px) {
+    .work-grid { grid-template-columns: 1fr; }
+    .topnav .links { display: none; }
+    header.hero { padding: 56px 0 50px; }
+    .hero-name { flex-direction: column; align-items: center; gap: .05em; }
+    .hero-name .outline { -webkit-text-stroke-width: 1.5px; }
+    .hero-foot { flex-direction: column; align-items: flex-start; margin-top: 36px; }
+    .hero-socials { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+    .section { padding: 56px 0; }
+    .exp-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .exp-row .when { text-align: left; }
+    article.case { padding: 0; }
+    .case-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .wrap, .topnav-inner { padding-left: 18px; padding-right: 18px; }
+    .btn-dark { padding: 12px 18px; }
+    .exp-panel { padding: 32px 22px; border-radius: 22px; }
+  }
+
+  /* Case study source content — hidden on the page itself, cloned into the modal on click */
+  article.case {
+    display: none;
+  }
+  article.case:nth-of-type(even) { background: var(--blush); }
+  .case-head { margin-bottom: 8px; }
+  .case-tags { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .case-head h2 {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    margin: 6px 0 0;
+  }
+  .case-meta { color: var(--muted); font-size: 0.95rem; margin: 10px 0 28px; }
+  .case-intro { font-size: clamp(1rem, 2.4vw, 1.15rem); max-width: 66ch; margin: 0 0 24px; }
+  .case-intro .accent { color: var(--rose); font-weight: 600; }
+
+  .research-tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 40px;
+  }
+  .research-tags .tag-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-right: 2px;
+  }
+  .research-tags .rtag {
+    background: var(--blush);
+    color: var(--rose);
+    border: 1px solid var(--line);
+    padding: 4px 13px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  article.case:nth-of-type(even) .research-tags .rtag { background: var(--paper); }
+
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .case-block {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+  }
+  article.case:nth-of-type(even) .case-block { background: var(--paper); }
+  .case-block h4 {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--rose);
+    margin: 0 0 8px;
+  }
+  .case-block p { margin: 0; font-size: 0.92rem; }
+
+  .flow-stage { margin-bottom: 40px; }
+  .flow-stage:last-child { margin-bottom: 0; }
+  .flow-stage h3 {
+    font-family: 'Newsreader', serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    font-style: normal;
+    margin: 0 0 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .flow-stage h3 .stage-num { color: var(--muted); font-size: 0.85rem; }
+  .flow-stage .flow-desc { color: var(--muted); font-size: 0.95rem; max-width: 66ch; margin: 0 0 18px; }
+
+  /* Image placeholder frame — swap the <img> src to replace, or drop in a <video> */
+  .media-frame {
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: 0 24px 48px -28px rgba(36,18,32,0.25);
+    background: var(--blush);
+  }
+  .media-frame img, .media-frame video {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .media-frame.placeholder {
+    aspect-ratio: 16/10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 24px;
+  }
+  .media-frame.img-fallback {
+    aspect-ratio: 16/10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    padding: 24px;
+  }
+  .media-frame.img-fallback .fallback-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--rose);
+    font-size: 1.2rem;
+  }
+  .media-frame.img-fallback .fallback-label {
+    color: var(--muted);
+    font-size: 0.88rem;
+    max-width: 42ch;
+  }
+
+  .status-note {
+    margin-top: 44px;
+    padding: 24px 26px;
+    background: var(--paper);
+    border: 1px dashed var(--line);
+    border-radius: 16px;
+  }
+  article.case:nth-of-type(even) .status-note { background: var(--blush-2); }
+  .status-note h4 {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    margin: 0 0 8px;
+  }
+  .status-note p { margin: 0; max-width: 64ch; }
+
+  /* Project modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 20px;
+    background: rgba(36,18,32,0.45);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    overflow-y: auto;
+  }
+  .modal-overlay.open { opacity: 1; visibility: visible; }
+  .modal-panel {
+    position: relative;
+    background: var(--paper);
+    border-radius: 24px;
+    max-width: 880px;
+    width: 100%;
+    padding: 48px 44px 56px;
+    box-shadow: 0 40px 80px -20px rgba(36,18,32,0.35);
+    transform: translateY(24px) scale(0.97);
+    opacity: 0;
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+  }
+  .modal-overlay.open .modal-panel { transform: translateY(0) scale(1); opacity: 1; }
+  .modal-close {
+    position: sticky;
+    top: 0;
+    float: right;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    z-index: 2;
+  }
+  .modal-close:hover { background: var(--rose); color: #fff; transform: rotate(90deg); }
+  .modal-content .case-head { margin-bottom: 8px; }
+  .modal-content .flow-stage,
+  .modal-content .case-grid,
+  .modal-content .research-tags,
+  .modal-content .status-note { opacity: 1 !important; transform: none !important; }
+  .modal-content .media-frame { margin-top: 4px; }
+  @media (max-width: 760px) {
+    .modal-overlay { padding: 0; }
+    .modal-panel { border-radius: 0; min-height: 100%; padding: 32px 22px 48px; }
+  }
+
+  
+</style>
+</head>
+<body>
+
+<nav class="topnav" id="topnav">
+  <div class="topnav-inner">
+    <span class="pill"><span class="dot"></span>Available for junior UI/UX roles</span>
+    <div class="links">
+      <a href="#work">Work<sup>[8]</sup></a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#contact" class="btn-dark">Let's Talk <span class="arr">↗</span></a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1 class="hero-name"><span class="outline">Sadhana</span><span>Gurung</span></h1>
+    <div class="hero-foot">
+      <div>
+        <p class="hero-role">UI/UX Designer</p>
+        <p class="hero-sub">Designing digital products that are clear, usable, and thoughtfully detailed — from research to prototype.</p>
+        <a href="#work" class="btn-dark">See the work <span class="arr">↗</span></a>
+      </div>
+      <div class="hero-socials">
+        <a class="pill" href="mailto:sadhana.gurung1414@gmail.com">✉ Email</a>
+        <a class="pill" href="#work">▦ Selected work</a>
+        <a class="pill" href="#experience">◔ Experience</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section wrap" id="work">
+  <h2 class="sec-title reveal">Selected Work</h2>
+  <div class="work-head reveal">
+    <div class="filters" role="group" aria-label="Filter projects">
+      <button class="filter-tab active" data-filter="all" aria-pressed="true">All</button>
+      <button class="filter-tab" data-filter="client" aria-pressed="false">Client Projects</button>
+      <button class="filter-tab" data-filter="challenge" aria-pressed="false">Design Challenges</button>
+      <button class="filter-tab" data-filter="personal" aria-pressed="false">Exploration</button>
+    </div>
+  </div>
+  <div class="work-grid">
+    <a href="#habitual" class="work-card reveal" data-cat="personal"><div class="card-thumb"><span class="badge">Featured</span><img src="images/habitual-onboarding.png" alt="Habitual app onboarding screens"><span class="go">↗</span></div><div class="card-body"><h3>Habitual</h3><div class="chips"><span class="chip">Mobile App</span><span class="chip">Shopping</span><span class="chip">Personal Project</span></div></div></a>
+    <a href="#bms" class="work-card reveal" data-cat="client"><div class="card-thumb bizz-thumb"><span class="badge">Client Project</span><img src="images/bms.png" alt="BizzFlow business management platform"><span class="go">↗</span></div><div class="card-body"><h3>BizzFlow — Business Management Platform</h3><div class="chips"><span class="chip">Dashboard</span><span class="chip">Multi-tenant</span><span class="chip">Admin &amp; Client UX</span></div></div></a>    <a href="#nhia" class="work-card reveal" data-cat="client"><div class="card-thumb"><span class="badge">Client Project</span><img src="images/nhia-home.png" alt="Nepal Hatchery Industries Association homepage"><span class="go">↗</span></div><div class="card-body"><h3>Nepal Hatchery Industries Association</h3><div class="chips"><span class="chip">Website</span><span class="chip">Not yet launched</span></div></div></a>
+    <a href="#aariyana" class="work-card reveal" data-cat="client"><div class="card-thumb"><span class="badge">Client · Live</span><img src="images/ats-hero.png" alt="Aariyana Tech Solutions homepage"><span class="go">↗</span></div><div class="card-body"><h3>Aariyana Tech Solutions — Company Website</h3><div class="chips"><span class="chip">Website</span><span class="chip">Redesign</span><span class="chip">Animation</span></div></div></a>
+    <a href="#tripnest" class="work-card reveal" data-cat="personal"><div class="card-thumb"><span class="badge">Exploration</span><img src="images/tripnest.png" alt="TripNest travel landing page"><span class="go">↗</span></div><div class="card-body"><h3>TripNest — Travel Landing Page</h3><div class="chips"><span class="chip">Landing Page</span><span class="chip">Animation</span></div></div></a>
+    <a href="#healthplus" class="work-card reveal" data-cat="challenge"><div class="card-thumb"><span class="badge">Challenge</span><img src="images/healthplus-landing.png" alt="HealthPlus landing page"><span class="go">↗</span></div><div class="card-body"><h3>HealthPlus — Healthcare Platform</h3><div class="chips"><span class="chip">Landing Page</span><span class="chip">Desktop &amp; Mobile</span></div></div></a>
+    <a href="#currybar" class="work-card reveal" data-cat="challenge"><div class="card-thumb"><span class="badge">Challenge</span><img src="images/curry-hero.png" alt="Curry Bar and Grill homepage"><span class="go">↗</span></div><div class="card-body"><h3>Curry Bar &amp; Grill — Restaurant Website</h3><div class="chips"><span class="chip">Landing Page</span><span class="chip">Restaurant</span></div></div></a>
+    <a href="#foodie" class="work-card reveal" data-cat="personal"><div class="card-thumb"><span class="badge">Early Practice</span><img src="images/foodie-b.png" alt="Foodie app screens"><span class="go">↗</span></div><div class="card-body"><h3>Foodie — Food Delivery App</h3><div class="chips"><span class="chip">Mobile App</span><span class="chip">Practice</span></div></div></a>
+  </div>
+</section>
+
+<section class="section wrap" id="experience">
+  <div class="exp-panel reveal">
+    <div class="exp-head">
+      <h2 class="sec-title">Experience</h2>
+      <span>Internship</span>
+    </div>
+    <div class="exp-row">
+      <div>
+        <h4>Aariyana Tech Solutions</h4>
+        <p>UI/UX Design Intern — company website redesign</p>
+      </div>
+      <div class="when"> Internship</div>
+    </div>
+  </div>
+</section>
+
+<section class="contact wrap" id="contact">
+  <span class="pill"><span class="dot"></span>Available for junior UI/UX roles</span>
+  <h2>Have a project in mind?</h2>
+  <p>Together, we can create something clear and impactful. Let's collaborate to bring your ideas to life in a way that resonates with everyone.</p>
+  <a href="mailto:sadhana.gurung1414@gmail.com" class="btn-dark">Contact Me <span class="arr">↗</span></a>
+  <div class="contact-pills">
+    <a class="pill me" href="#top"><span class="avatar">SG</span>Sadhana Gurung</a>
+    <a class="pill" href="mailto:sadhana.gurung1414@gmail.com">✉ Email</a>
+    <a class="pill" href="#work">▦ Work</a>
+    <a class="pill" href="#experience">◔ Experience</a>
+  </div>
+</section>
+<p class="fine-print">Sadhana Gurung — UI/UX Designer, based in Nepal</p>
+
+<div style="display:none">
+<article class="case" id="habitual">
+  <div class="wrap">
+    <div class="case-head reveal">
+      <div class="case-tags"><span class="card-tag tag-personal">Self-directed learning project</span></div>
+      <h2>Habitual</h2>
+      <p class="case-meta">Mobile shopping app · Full-cycle UX/UI design &amp; prototype</p>
+    </div>
+    <p class="case-intro reveal">Most shopping apps show every shopper the same catalogue — the same homepage, the same "trending" shelf, no sense of what any one person actually wants. <span class="accent">Habitual</span> is a concept for a shopping app that gets to know a shopper's taste from the very first screen, then shapes the whole experience around it.</p>
+
+    <div class="research-tags reveal">
+      <span class="tag-label">Research &amp; discovery:</span>
+      <span class="rtag">Competitive audit</span>
+      <span class="rtag">Problem framing</span>
+      <span class="rtag">Onboarding flow mapping</span>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-block"><h4>The problem</h4><p>Generic product feeds make shoppers dig through irrelevant results instead of finding things they'd actually want.</p></div>
+      <div class="case-block"><h4>The approach</h4><p>Front-load personalization: ask about goals and interests during onboarding, then shape the feed, wishlist, and recommendations around it.</p></div>
+      <div class="case-block"><h4>My role</h4><p>End to end — wireframes, UI design, and a full interactive prototype, built to practice the complete process.</p></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 1</span>Onboarding &amp; personalization</h3>
+      <p class="flow-desc">The first-run flow names the problem before showing how curation fixes it. Registration doubles as a preference-gathering step that later shapes the home feed.</p>
+      <div class="media-frame"><img src="images/habitual-onboarding.png" alt="Habitual onboarding, intro, and registration screens"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 2</span>Home, wishlist, profile &amp; cart</h3>
+      <p class="flow-desc">The home feed surfaces sections built from onboarding signals. Wishlist, profile, and cart follow the same visual language throughout.</p>
+      <div class="media-frame"><img src="images/habitual-shopping.png" alt="Habitual home page, wishlist, profile, and cart screens"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 3</span>Product, checkout &amp; confirmation</h3>
+      <p class="flow-desc">Product and checkout keep the flow short: inline variant selection, single-screen checkout, and a lightweight confirmation moment.</p>
+      <div class="media-frame"><img src="images/habitual-checkout.png" alt="Habitual product page, checkout, order confirmation, and outro screens"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 4</span>Search &amp; filters</h3>
+      <p class="flow-desc">Search covers every state — default, active, filled, and empty — plus a filter overlay for sorting by price, category, and reviews.</p>
+      <div class="media-frame"><img src="images/habitual-search.png" alt="Habitual search screens and filters overlay"></div>
+    </div>
+
+    <div class="status-note reveal">
+      <h4>What this project practiced</h4>
+      <p>A self-directed, course-guided project — not shipped work — built to practice a complete mobile e-commerce flow start to finish, including empty and error states.</p>
+    </div>
+  </div>
+</article>
+
+<article class="case" id="tripnest">
+  <div class="wrap">
+    <div class="case-head reveal">
+      <div class="case-tags"><span class="card-tag tag-personal">Self-directed learning project</span></div>
+      <h2>TripNest</h2>
+      <p class="case-meta">Travel booking landing page · UI design &amp; animation practice</p>
+    </div>
+    <p class="case-intro reveal">A travel booking concept built specifically to practice one thing: a <span class="accent">never-ending slide animation</span> — the seamless, looping carousel pattern used for featured destinations on booking sites.</p>
+
+    <div class="research-tags reveal">
+      <span class="tag-label">Research &amp; discovery:</span>
+      <span class="rtag">Interaction pattern audit</span>
+      <span class="rtag">Technical feasibility check</span>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-block"><h4>The goal</h4><p>Learn and implement an infinite, seamlessly looping slider — a common but fiddly interaction pattern.</p></div>
+      <div class="case-block"><h4>The approach</h4><p>Build a real landing page around the animation, not an isolated demo, so it sits in context.</p></div>
+      <div class="case-block"><h4>My role</h4><p>Solo — UI design plus a small reusable component library alongside the page.</p></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 1</span>Landing page &amp; components</h3>
+      <p class="flow-desc">The hero pairs a bold headline with a destination search bar. Below it, the Featured Destinations row is where the looping slide animation lives, backed by a matching component library.</p>
+      <div class="media-frame"><img src="images/tripnest.png" alt="TripNest travel landing page and component library"></div>
+    </div>
+
+    <div class="status-note reveal">
+      <h4>What this project practiced</h4>
+      <p>A narrow, deliberate exercise — get one animation pattern working cleanly inside a real interface. Personal project, not shipped or client work.</p>
+    </div>
+  </div>
+</article>
+
+<article class="case" id="healthplus">
+  <div class="wrap">
+    <div class="case-head reveal">
+      <div class="case-tags"><span class="card-tag tag-challenge">Design challenge</span></div>
+      <h2>HealthPlus</h2>
+      <p class="case-meta">Healthcare platform · UI design challenge — desktop &amp; mobile</p>
+    </div>
+    <p class="case-intro reveal">A scoped design brief: design a healthcare landing page and doctors' directory for both desktop and mobile. <span class="accent">HealthPlus</span> was built around calm, trust, and getting to a booking with zero confusion.</p>
+
+    <div class="research-tags reveal">
+      <span class="tag-label">Research &amp; discovery:</span>
+      <span class="rtag">Problem framing</span>
+      <span class="rtag">Trust-signal research</span>
+      <span class="rtag">Information architecture</span>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-block"><h4>The brief</h4><p>Design a healthcare landing page and doctors' directory, adapted for desktop and mobile, within a limited timeframe.</p></div>
+      <div class="case-block"><h4>The approach</h4><p>Real doctor photos, real city-based testimonials, concrete trust numbers, and one consistent way to book.</p></div>
+      <div class="case-block"><h4>My role</h4><p>Solo UI design — dedicated desktop and mobile layouts, plus a written design rationale.</p></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 1</span>Landing page — desktop &amp; mobile</h3>
+      <p class="flow-desc">The hero leads with trust numbers rather than generic marketing copy. Services, "Why Choose HealthPlus Care," and "Meet Our Doctors" follow, each section carrying one message.</p>
+      <div class="media-frame"><img src="images/healthplus-landing.png" alt="HealthPlus landing page desktop and mobile"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 2</span>Doctors directory — desktop &amp; mobile</h3>
+      <p class="flow-desc">Category filters over a card grid of real doctor photos let patients narrow down and book in a couple of taps. The same "Book Now" button appears everywhere.</p>
+      <div class="media-frame"><img src="images/healthplus-directory.png" alt="HealthPlus doctors directory desktop and mobile"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 3</span>Design rationale</h3>
+      <div class="case-grid" style="margin-bottom:0;">
+        <div class="case-block"><h4>Trust &amp; approachability</h4><p>Blue for a calm, professional feel; real doctor photos over stock imagery; real city-based testimonials and concrete stats.</p></div>
+        <div class="case-block"><h4>Layout &amp; readability</h4><p>A simple top-to-bottom flow with generous white space so a stressed visitor isn't overwhelmed.</p></div>
+        <div class="case-block"><h4>Type &amp; color system</h4><p>Plus Jakarta Sans headings, Inter body text, Poppins Bold for numbers, one consistent blue for every button.</p></div>
+      </div>
+    </div>
+
+  </div>
+</article>
+
+<article class="case" id="nhia">
+  <div class="wrap">
+    <div class="case-head reveal">
+      <div class="case-tags"><span class="card-tag tag-client">Client project — not yet launched</span></div>
+      <h2>Nepal Hatchery Industries Association</h2>
+      <p class="case-meta">Association website · Full-cycle UX/UI design</p>
+    </div>
+    <p class="case-intro reveal">The Nepal Hatchery Industries Association represents a significant part of the country's poultry sector, but had <span class="accent">no website at all</span> — no way to publish news, introduce leadership, or explain its work to members and the public.</p>
+
+    <div class="research-tags reveal">
+      <span class="tag-label">Research &amp; discovery:</span>
+      <span class="rtag">Stakeholder input</span>
+      <span class="rtag">Content audit</span>
+      <span class="rtag">Sitemap &amp; IA</span>
+      <span class="rtag">Competitive scan</span>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-block"><h4>The problem</h4><p>With no web presence, the association had no channel to share news, policy work, or credibility with the industry it represents.</p></div>
+      <div class="case-block"><h4>The approach</h4><p>Design around three jobs: build trust, inform with news and policy updates, and convert via contact and membership.</p></div>
+      <div class="case-block"><h4>My role</h4><p>End to end — research, wireframes, full UI design, and a clickable prototype for the whole site.</p></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 1</span>Home &amp; About</h3>
+      <p class="flow-desc">The homepage leads with scale — impact stats to establish credibility — followed by a message from the president. The About page carries a full history timeline plus vision and mission.</p>
+      <div class="media-frame"><img src="images/nhia-home.png" alt="Nepal Hatchery Industries Association home page and About Us page"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 2</span>News, team &amp; industry work</h3>
+      <p class="flow-desc">A news section keeps members updated on sector developments. The Team page introduces the executive committee, and Works &amp; Activities documents policy advocacy and initiatives.</p>
+      <div class="media-frame"><img src="images/nhia-news.png" alt="Nepal Hatchery Industries Association news pages and team page"></div>
+    </div>
+
+    <div class="status-note reveal">
+      <h4>Status</h4>
+      <p>Design complete and approved by the client; not yet launched. Real client engagement — the value here was translating zero digital presence into a credible web identity from scratch.</p>
+    </div>
+  </div>
+</article>
+
+<article class="case" id="bms">
+  <div class="wrap">
+    <div class="case-head reveal">
+      <div class="case-tags"><span class="card-tag tag-client">Client project</span></div>
+      <h2>BizzFlow</h2>
+      <p class="case-meta">Multi-tenant business management platform · Admin &amp; client UX/UI design</p>
+    </div>
+    <p class="case-intro reveal">Most small businesses juggle sales, stock, staff, and finances across separate tools that don't talk to each other. <span class="accent">BizzFlow</span> is a single platform to run all of it — with one catch: it needed to work for five completely different kinds of users, from the platform admin approving new businesses down to an employee ringing up a sale at the counter. I designed the two highest-stakes sides of that system: the internal Admin panel and the Client (business owner) experience.</p>
+
+    <div class="research-tags reveal">
+      <span class="tag-label">Research &amp; discovery:</span>
+      <span class="rtag">Role &amp; permission mapping</span>
+      <span class="rtag">Multi-tenant flow diagramming</span>
+      <span class="rtag">Information architecture</span>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-block"><h4>The problem</h4><p>One platform, five roles (admin, moderator, client, employee, customer) each needing a different level of access and a completely different pace of use — without the interface ever feeling like five separate products.</p></div>
+      <div class="case-block"><h4>The approach</h4><p>Design role-first: map what each user is allowed to see and do before touching a single screen, then build a shared visual system flexible enough to hold a dense analytics dashboard and a fast, low-friction setup flow.</p></div>
+      <div class="case-block"><h4>My role</h4><p>Solo — permission-model thinking, IA, and full UI design for the Admin and Client sides, including the onboarding and business-setup flows that feed into both.</p></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 1</span>Onboarding &amp; role selection</h3>
+      <p class="flow-desc">The very first screen asks one question — how will you use the platform — and splits the entire experience from there. Each path (Client vs. Moderator) then collects only what's relevant to that role, in short steps rather than one long form.</p>
+      <div class="media-frame"><img src="images/bms-onboarding.png" alt="BizzFlow role selection screen: Client or Moderator"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 2</span>Verification request</h3>
+      <p class="flow-desc">Because moderators and businesses both need to be vetted before they get real access, the request flow is broken into clear steps with visible progress, collecting identity details up front so OTP verification isn't a dead end later.</p>
+      <div class="media-frame"><img src="images/bms-signup.png" alt="BizzFlow verification request form with step progress indicator"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 3</span>Admin dashboard &amp; analytics</h3>
+      <p class="flow-desc">The Admin's job is oversight, not daily operation — so the dashboard leads with the numbers that matter for running the platform itself: registered businesses, pending approvals, total users, and subscription revenue trending over the year, backed by role and plan distribution at a glance.</p>
+      <div class="media-frame"><img src="images/bms-admin-dashboard.png" alt="BizzFlow admin dashboard with platform-wide analytics"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 4</span>User management &amp; permission detail</h3>
+      <p class="flow-desc">Every user on the platform — moderators and clients alike — lives in one searchable, filterable table. Opening a user slides in their full profile: contact info, assigned roles, and every individual permission they hold, so an admin can audit or adjust access without hunting through separate screens.</p>
+      <div class="media-frame"><img src="images/bms-user-detail.png" alt="BizzFlow user detail panel showing roles and granular permissions"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 5</span>Admin profile</h3>
+      <p class="flow-desc">A dedicated profile view separates the admin's own account security (password, recovery email) from a live feed of recent platform activity — verifications, role changes, bans — so accountability is visible in the same place identity is managed.</p>
+      <div class="media-frame"><img src="images/bms-admin-profile.png" alt="BizzFlow admin profile with security overview and recent activity feed"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 6</span>Business setup</h3>
+      <p class="flow-desc">Once approved, a client's first real task is registering their business. The form is split into a short, guided wizard with a "skip for now" escape hatch, because a new business owner shouldn't have to stop and find their PAN/VAT number just to see what the platform can do.</p>
+      <div class="media-frame"><img src="images/bms-business-setup.png" alt="BizzFlow business setup wizard collecting business details"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 7</span>Client dashboard</h3>
+      <p class="flow-desc">The Client dashboard flips the priority from platform oversight to business health: today's revenue and expenses, employee and branch counts, and a live feed of what just happened across the business — new hires, branch verifications, subscription changes — all before the owner scrolls once.</p>
+      <div class="media-frame"><img src="images/bms-client-dashboard.png" alt="BizzFlow client dashboard showing business overview and recent activity"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 8</span>Client analytics &amp; reporting</h3>
+      <p class="flow-desc">For a multi-branch business, "how are we doing" is a harder question than one number can answer — so analytics break revenue and expense down by month, by branch, and by category, plus a dedicated profit-and-loss view, all filterable so an owner running five branches isn't stuck reading data for the other four.</p>
+      <div class="media-frame"><img src="images/bms-client-analytics.png" alt="BizzFlow client analytics with revenue, expense, and branch breakdowns"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 9</span>Profit &amp; loss, expense breakdown</h3>
+      <p class="flow-desc">Deeper financial views — profit-and-loss trend, expense category breakdown, and revenue-vs-expense by branch — round out the reporting suite, giving an owner the kind of view they'd otherwise need a separate accounting tool for.</p>
+      <div class="media-frame"><img src="images/bms-client-reports.png" alt="BizzFlow profit and loss analysis and expense category breakdown"></div>
+    </div>
+
+    <div class="status-note reveal">
+      <h4>What this project practiced</h4>
+      <p>Designing for permission depth without letting the interface feel bureaucratic — a checkbox-and-role model underneath, a clean dashboard on top. Client project; employee, customer, and moderator-side screens are still in progress.</p>
+    </div>
+  </div>
+</article>
+
+<article class="case" id="aariyana">
+  <div class="wrap">
+    <div class="case-head reveal">
+      <div class="case-tags"><span class="card-tag tag-client">Internship project — live</span></div>
+      <h2>Aariyana Tech Solutions</h2>
+      <p class="case-meta">Company website redesign · Solo UX/UI design &amp; animation</p>
+    </div>
+    <p class="case-intro reveal">Aariyana Tech Solutions already had a website — but the UI wasn't proper, and it failed to convey what the company did. I redesigned it solo during my internship, and it's <span class="accent">live today</span>.</p>
+
+    <div class="research-tags reveal">
+      <span class="tag-label">Research &amp; discovery:</span>
+      <span class="rtag">Existing site audit</span>
+      <span class="rtag">Stakeholder goals</span>
+      <span class="rtag">Competitive scan</span>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-block"><h4>The problem</h4><p>Weak UI that didn't clearly communicate ATS's services, credibility, or value.</p></div>
+      <div class="case-block"><h4>The approach</h4><p>A clear value proposition, process transparency, real proof (team, partners, client work), and motion to feel current.</p></div>
+      <div class="case-block"><h4>My role</h4><p>Solo — the entire redesign, including custom animation like the rotating diagram on the homepage.</p></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 1</span>Hero &amp; mission</h3>
+      <p class="flow-desc">A direct positioning statement paired with an animated device mockup. A rotating circular diagram anchors "Built for Your Digital Success" — one of several custom animated moments.</p>
+      <div class="media-frame"><img src="images/ats-hero.png" alt="Aariyana Tech Solutions homepage hero and animated rotating diagram"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 2</span>Services &amp; process</h3>
+      <p class="flow-desc">Services laid out as a clear grid. A "How We Work" section breaks the engagement into Define, Design, Build, Launch.</p>
+      <div class="media-frame"><img src="images/ats-services.png" alt="Aariyana Tech Solutions services grid and process diagram"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 3</span>Team, credibility &amp; contact</h3>
+      <p class="flow-desc">Real faces, a "Why Choose Us" checklist, partner logos, and an FAQ handle objections before a visitor reaches out.</p>
+      <div class="media-frame"><img src="images/ats-team.png" alt="Aariyana Tech Solutions team, why choose us, partners, and contact page"></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 4</span>Proof of work</h3>
+      <p class="flow-desc">The site showcases ATS's actual client projects — including the Nepal Hatchery Industries Association site — each with its own detail page.</p>
+      <div class="media-frame"><img src="images/ats-work.png" alt="Aariyana Tech Solutions project showcase pages"></div>
+    </div>
+
+    <div class="status-note reveal">
+      <h4>Status</h4>
+      <p>Live. This was the project where I got to own an entire brand's web presence solo — from IA and UI through to motion design — and see it ship.</p>
+    </div>
+  </div>
+</article>
+
+<article class="case" id="currybar">
+  <div class="wrap">
+    <div class="case-head reveal">
+      <div class="case-tags"><span class="card-tag tag-challenge">Design challenge</span></div>
+      <h2>Curry Bar &amp; Grill</h2>
+      <p class="case-meta">Restaurant website · UI design challenge</p>
+    </div>
+    <p class="case-intro reveal">A scoped design brief: design a restaurant website that makes people hungry, then makes it easy to order or book a table. <span class="accent">Curry Bar &amp; Grill</span> is a food-forward homepage built to convert visits into orders.</p>
+
+    <div class="research-tags reveal">
+      <span class="tag-label">Research &amp; discovery:</span>
+      <span class="rtag">Problem framing</span>
+      <span class="rtag">Conversion-path planning</span>
+    </div>
+
+    <div class="case-grid reveal">
+      <div class="case-block"><h4>The brief</h4><p>Design a restaurant website balancing appetite appeal with clear paths to ordering, booking, and location.</p></div>
+      <div class="case-block"><h4>The approach</h4><p>A bold hero and trust signals first, then ordering, popular dishes, locations, and testimonials in order of intent.</p></div>
+      <div class="case-block"><h4>My role</h4><p>Solo UI design under time pressure, working from the brief alone.</p></div>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Stage 1</span>Hero &amp; popular picks</h3>
+      <p class="flow-desc">The hero leads with the food itself and a direct value line, backed by rating and order-count stats. A "Popular Picks" strip surfaces best-sellers with one-tap ordering.</p>
+      <div class="media-frame"><img src="images/curry-hero.png" alt="Curry Bar and Grill homepage hero and popular picks"></div>
+    </div>
+
+
+  </div>
+</article>
+
+<article class="case" id="foodie">
+  <div class="wrap">
+    <div class="case-head reveal">
+      <div class="case-tags"><span class="card-tag tag-personal">Early UI practice</span></div>
+      <h2>Foodie</h2>
+      <p class="case-meta">Food delivery app · Self-directed learning project</p>
+    </div>
+    <p class="case-intro reveal">An early practice project working through the <span class="accent">core screens of a food delivery app</span> — onboarding, home feed, wishlist, item customization, and cart.</p>
+
+    <div class="research-tags reveal">
+      <span class="tag-label">Research &amp; discovery:</span>
+      <span class="rtag">Reference-app audit</span>
+      <span class="rtag">Flow mapping practice</span>
+    </div>
+
+    <div class="flow-stage reveal">
+      <h3><span class="stage-num">Overview</span>Full ordering flow</h3>
+      <p class="flow-desc">The focus was reps — getting comfortable designing a complete ordering flow end to end, from a first-run intro through to checkout.</p>
+      <div class="media-frame"><img src="images/foodie-b.png" alt="Foodie app home page, wishlist, product customization, and cart"></div>
+    </div>
+
+  </div>
+</article>
+
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay" aria-hidden="true">
+  <div class="modal-panel" role="dialog" aria-modal="true" id="modalPanel">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+  // Mobile nav toggle
+  (function () {
+    const nav = document.getElementById('topnav');
+    const toggle = document.getElementById('navToggle');
+    if (toggle && nav) {
+      toggle.addEventListener('click', function () {
+        const isOpen = nav.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      nav.querySelectorAll('.links a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          nav.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+  })();
+
+  // Project modal: click a card, clone its case-study content into a popup
+  (function () {
+    const overlay = document.getElementById('modalOverlay');
+    const panel = document.getElementById('modalPanel');
+    const content = document.getElementById('modalContent');
+    const closeBtn = document.getElementById('modalClose');
+    let lastFocused = null;
+
+    function openModal(id) {
+      const source = document.getElementById(id);
+      if (!source) return;
+      const wrapEl = source.querySelector('.wrap');
+      if (!wrapEl) return;
+      content.innerHTML = wrapEl.innerHTML;
+      // Content is inside a modal, not the scrolling page — show it immediately
+      content.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+      if (window.applyImageFallback) window.applyImageFallback(content);
+      lastFocused = document.activeElement;
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (lastFocused) lastFocused.focus();
+    }
+
+    document.querySelectorAll('.work-card').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        e.preventDefault();
+        const id = card.getAttribute('href').replace('#', '');
+        openModal(id);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+  })();
+
+  // Reveal-on-scroll: fade + slide up, once per element
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+
+  // Graceful fallback for missing local images (e.g. images/*.png not present)
+  function applyImageFallback(scope) {
+    scope.querySelectorAll('img').forEach(function (img) {
+      if (img.dataset.fallbackBound) return;
+      img.dataset.fallbackBound = 'true';
+      img.addEventListener('error', function () {
+        const wrapEl = img.closest('.media-frame') || img.closest('.card-thumb');
+        if (!wrapEl || wrapEl.dataset.fallbackApplied) return;
+        wrapEl.dataset.fallbackApplied = 'true';
+        const label = img.alt || 'Image coming soon';
+        const isCard = wrapEl.classList.contains('card-thumb');
+        wrapEl.classList.add('img-fallback');
+        img.remove();
+        if (!isCard) {
+          const icon = document.createElement('div');
+          icon.className = 'fallback-icon';
+          icon.textContent = '\u2726';
+          wrapEl.appendChild(icon);
+        }
+        const span = document.createElement('span');
+        span.className = 'fallback-label';
+        span.textContent = label;
+        wrapEl.appendChild(span);
+      }, { once: true });
+    });
+  }
+  applyImageFallback(document);
+  window.applyImageFallback = applyImageFallback;
+</script>
+<script>
+  // Work filters
+  (function () {
+    const tabs = document.querySelectorAll('.filter-tab');
+    const cards = document.querySelectorAll('.work-card');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.classList.remove('active'); t.setAttribute('aria-pressed', 'false'); });
+        tab.classList.add('active'); tab.setAttribute('aria-pressed', 'true');
+        const f = tab.dataset.filter;
+        cards.forEach(function (c) {
+          c.classList.toggle('hide', f !== 'all' && c.dataset.cat !== f);
+        });
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
